@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import sys
 import json
 import importlib
 import os
-
-
-with open('config.json', encoding='utf-8') as data_file:
-    ankiwordconfig = json.load(data_file)
 
 sys.path.append('anki')
 from anki import Collection as aopen
@@ -24,54 +21,72 @@ def initAnkiModule(ankiwordconfig, card_type):
     deck.models.setCurrent(model)
     return deck
 
-def handleProfile(word, ankiwordconfig):
+def handleProfile(ankiwordconfig,word,back,append):
 
     card_type = ankiwordconfig['card_type'] if 'card_type' in ankiwordconfig else 'basic'
     dict_source = importlib.import_module('module.{}'.format(ankiwordconfig['dict_source'].lower()))
     card_type = importlib.import_module('cardtype.{}'.format(card_type))
     deck = initAnkiModule(ankiwordconfig,card_type)
 
-    #print(deck.findNotes("'Front:*'"))
-    #print(deck.getNote("1512797993242").keys())
-    #print(deck.getNote("1512797993242").items())
-    dids = deck.findNotes("'Front:{}<br>*'".format(word))
-    if 1 == len(dids):
-        print("Deck found:")
-        print("Front Side: {}".format(deck.getNote(dids[0])["Front"]))
-        print("Back Side: {}".format(deck.getNote(dids[0])["Back"]))
-        return
-    elif len(dids) > 1:
-        print("Duplicated Deck found")
-        for did in dids:
-            print("Front Side: {}".format(deck.getNote(did)["Front"]))
-            print("Back Side: {}".format(deck.getNote(did)["Back"]))
-        return
-
-    result = dict_source.LookUp(word, ankiwordconfig)
-    print(result)
-    if result is None:
-        exit
-
-    card_data = card_type.MakeCard(result)
-    if 0 == len(card_data):
-        exit
-
-    card = deck.newNote()
-    for key in card_data:
-        card[key] = card_data[key]
-    try:
-        deck.addNote(card)
-    except(Exception, e):
-        if hasattr(e, "data"):
-            sys.exit("ERROR: Cound not add {}:{}", e.data["field"], e.data['type'])
+    nids = deck.findNotes("'Front:{}<br>*'".format(word))
+    if 1 == len(nids):
+        if append and append not in deck.getNote(nids[0])["Back"]:
+            deck.findReplace(nids, 
+                deck.getNote(nids[0])["Back"], 
+                deck.getNote(nids[0])["Back"] + append + "<br>", 
+                field="Back")
         else:
-            sys.exit(e)
+            print("Deck already exist:")
+        print("Front Side: {}".format(deck.getNote(nids[0])["Front"]))
+        print("Back Side: {}".format(deck.getNote(nids[0])["Back"]))
+    elif len(nids) > 1:
+        print("Duplicated Deck found")
+        for nid in nids:
+            print("Front Side: {}".format(deck.getNote(nid)["Front"]))
+            print("Back Side: {}".format(deck.getNote(nid)["Back"]))
+    else:
+        if back:
+            result['front_word'] = word + '<br>'
+            result['back_word'] = back + '<br>'
+        else:
+            result = dict_source.LookUp(word, ankiwordconfig)
+
+        if result is None:
+            return
+
+        if append:
+            result['back_word'] += append + '<br>'
+
+        card_data = card_type.MakeCard(result)
+        if 0 == len(card_data):
+            print("Generate card_data failed")
+            return
+
+        card = deck.newNote()
+        for key in card_data:
+           card[key] = card_data[key]
+        try:
+            deck.addNote(card)
+        except(Exception, e):
+            if hasattr(e, "data"):
+                sys.exit("ERROR: Cound not add {}:{}", e.data["field"], e.data['type'])
+            else:
+                sys.exit(e)
+        print("Front Side: {}".format(card["Front"]))
+        print("Back Side: {}".format(card["Back"]))
 
     deck.save()
     deck.close()
 
 if '__main__':
-    if  len(sys.argv) < 2:
-        print("Usage: "+sys.argv[0]+" <word to add>")
-        exit(1)
-    handleProfile(sys.argv[1],ankiwordconfig)
+    import argparse
+    with open('config.json', encoding='utf-8') as config_file:
+        ankiwordconfig = json.load(config_file)
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("word",help="word to add to anki, front side of the card")
+    parser.add_argument("-b", "--back",help="Back side of the card, if this option is provied, ankiword will not lookup the word online")
+    parser.add_argument("-a", "--append",help="Things append to the back side of the card")
+    args = parser.parse_args()
+
+    handleProfile(ankiwordconfig,args.word,args.back,args.append)

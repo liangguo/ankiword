@@ -16,7 +16,7 @@ AnkiEasy can be used to add a batch of words to Anki
 2. Clone this git repo or just download the [zip file](https://github.com/liangguo/ankiword/archive/master.zip)
 3. `python3 setup.py install` (`python setup.py install` for Windows user)
 4. Modify the config.json (see below for more information)
-5. run `python3 ankiword <word to add>` (`python ankiword` for Windows user) to add words to anki
+5. run `python3 ankiword <word>` (`python ankiword` for Windows user) to add words to anki
 6. Open anki and check your deck.
 
 # Command Syntax
@@ -24,10 +24,19 @@ AnkiEasy can be used to add a batch of words to Anki
 The syntax of ankiword is 
 
 ```
-	python3 ankiword <word to add>
+	python3 ankiword [-b <back side of the word> ] [-a <additional contents to the back side of the word>] [-h] <word>
 ```
 
-`<word to add>` is the word you want add to anki
+## Option description
+
+-b or --back, optional, specify the back side of the card, if this option is specified, ankiword 
+will not lookup online.
+
+-a or --append, optional, append something to the back of the card. If the card already exist, the 
+contents will be appended to the back side
+
+`<word>` is the word you want add to anki
+
 
 # Config
 
