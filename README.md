@@ -29,10 +29,10 @@ The syntax of ankiword is
 
 ## Option description
 
--b or --back, optional, specify the back side of the card, if this option is specified, ankiword 
+`-b` or `--back`, optional, specify the back side of the card, if this option is specified, ankiword 
 will not lookup online.
 
--a or --append, optional, append something to the back of the card. If the card already exist, the 
+`-a` or `--append`, optional, append something to the back of the card. If the card already exist, the 
 contents will be appended to the back side
 
 `<word>` is the word you want add to anki
@@ -45,7 +45,7 @@ Config.json is the ankiword configuration profile, it contains following fields.
 - deck : Anki deck you want add cards to. 
 - collection: A system path indicates to your anki collection (it's different in different OS)
 - download_dir: A system path point to your anki media files.
-- dict_source: what language you want to use to lookup.
+- dict_source: which language/online dictionary you want to use to lookup.
   	- english_yahoo
   	- english_baicizhan
 	- english_cambridge
