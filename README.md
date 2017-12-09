@@ -8,15 +8,15 @@ Ankiword is tested on Mac OS X, but it may work on any platform with python 3
 installed.
 
 Most part of this project is stolen from [AnkiEasy](https://github.com/ex860/Ankieasy),
-AnkiEasy can be used to add a branch of words to Anki
+AnkiEasy can be used to add a batch of words to Anki
 
 # Usage
 
 1. Install [anki](https://apps.ankiweb.net/) application and python3
 2. Clone this git repo or just download the [zip file](https://github.com/liangguo/ankiword/archive/master.zip)
-3. python3 setup.py install ("python setup.py install" for Windows user)
+3. `python3 setup.py install` (`python setup.py install` for Windows user)
 4. Modify the config.json (see below for more information)
-5. run **python3 ankiword <word to add>** ("python ankiword" for Windows user) to add words to anki
+5. run `python3 ankiword <word to add>` (`python ankiword` for Windows user) to add words to anki
 6. Open anki and check your deck.
 
 # Command Syntax
