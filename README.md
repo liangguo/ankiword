@@ -1,21 +1,22 @@
 # Introduction
 
-Ankiword can be used to add word to Anki deck. With ankiword, you need just 
-provide the front side of the card, the back side is the query result in online
+Ankiword can be used to add word to Anki. With ankiword, you need just 
+provide the word you want add, the description is queried from online
 dictionary.
 
 Ankiword is tested on Mac OS X, but it may work on any platform with python 3 
 installed.
 
-Most part of this project is stolen from [AnkiEasy](https://github.com/ex860/Ankieasy)
+Most part of this project is stolen from [AnkiEasy](https://github.com/ex860/Ankieasy),
+AnkiEasy can be used to add a branch of words to Anki
 
 # Usage
 
-1. Install [anki](https://apps.ankiweb.net/, or from brew cask) application and python3
+1. Install [anki](https://apps.ankiweb.net/) application and python3
 2. Clone this git repo or just download the [zip file](https://github.com/liangguo/ankiword/archive/master.zip)
 3. python3 setup.py install ("python setup.py install" for Windows user)
 4. Modify the config.json (see below for more information)
-5. run ** python3 ankiword <word to add> ** ("python ankiword" for Windows user) to add words to anki
+5. run **python3 ankiword <word to add>** ("python ankiword" for Windows user) to add words to anki
 6. Open anki and check your deck.
 
 # Command Syntax
@@ -26,7 +27,7 @@ The syntax of ankiword is
 	python3 ankiword <word to add>
 ```
 
-** <word to add> ** is the word you want add to anki
+`<word to add>` is the word you want add to anki
 
 # Config
 
