@@ -1,0 +1,77 @@
+#!/usr/bin/env python3
+import sys
+import json
+import importlib
+import os
+
+
+with open('config.json', encoding='utf-8') as data_file:
+    ankiwordconfig = json.load(data_file)
+
+sys.path.append('anki')
+from anki import Collection as aopen
+
+def initAnkiModule(ankiwordconfig, card_type):
+    if "collection" not in ankiwordconfig or "deck" not in ankiwordconfig:
+        return None
+    deck = aopen(ankiwordconfig['collection'])
+    deckId = deck.decks.id(ankiwordconfig['deck'])
+
+    deck.decks.select(deckId)
+    model = deck.models.byName(card_type.GetCardType(deck.models))
+    model['did'] = deckId
+    deck.models.save(model)
+    deck.models.setCurrent(model)
+    return deck
+
+def handleProfile(word, ankiwordconfig):
+
+    card_type = ankiwordconfig['card_type'] if 'card_type' in ankiwordconfig else 'basic'
+    dict_source = importlib.import_module('module.{}'.format(ankiwordconfig['dict_source'].lower()))
+    card_type = importlib.import_module('cardtype.{}'.format(card_type))
+    deck = initAnkiModule(ankiwordconfig,card_type)
+
+    #print(deck.findNotes("'Front:*'"))
+    #print(deck.getNote("1512797993242").keys())
+    #print(deck.getNote("1512797993242").items())
+    dids = deck.findNotes("'Front:{}<br>*'".format(word))
+    if 1 == len(dids):
+        print("Deck found:")
+        print("Front Side: {}".format(deck.getNote(dids[0])["Front"]))
+        print("Back Side: {}".format(deck.getNote(dids[0])["Back"]))
+        return
+    elif len(dids) > 1:
+        print("Duplicated Deck found")
+        for did in dids:
+            print("Front Side: {}".format(deck.getNote(did)["Front"]))
+            print("Back Side: {}".format(deck.getNote(did)["Back"]))
+        return
+
+    result = dict_source.LookUp(word, ankiwordconfig)
+    print(result)
+    if result is None:
+        exit
+
+    card_data = card_type.MakeCard(result)
+    if 0 == len(card_data):
+        exit
+
+    card = deck.newNote()
+    for key in card_data:
+        card[key] = card_data[key]
+    try:
+        deck.addNote(card)
+    except(Exception, e):
+        if hasattr(e, "data"):
+            sys.exit("ERROR: Cound not add {}:{}", e.data["field"], e.data['type'])
+        else:
+            sys.exit(e)
+
+    deck.save()
+    deck.close()
+
+if '__main__':
+    if  len(sys.argv) < 2:
+        print("Usage: "+sys.argv[0]+" <word to add>")
+        exit(1)
+    handleProfile(sys.argv[1],ankiwordconfig)
