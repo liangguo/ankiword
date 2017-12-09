@@ -31,7 +31,9 @@ def LookUp(word, data):
     if "download_dir" in data:
         download_dir = data['download_dir']
         try:
-            wget.download("http://baicizhan.qiniucdn.com/word_audios/{}.mp3".format(wordUrl), out=download_dir+"Py_"+word+".mp3")
+            wget.download("http://baicizhan.qiniucdn.com/word_audios/{}.mp3".format(wordUrl), 
+                out=download_dir+"Py_"+word+".mp3",
+                bar=None)
         except urllib.error.HTTPError as e:
             print("No sound file found")
         else:
